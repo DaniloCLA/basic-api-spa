@@ -1,0 +1,56 @@
+.bg-dark {
+    background-color: #4A5459 !important;
+    text-shadow: 1px 1px #000;
+}
+.navbar-brand img {
+    width: 100px;
+    margin-right: 40px;
+}
+
+.nav-item {
+    margin-right: 8px;
+}
+
+.nav-item i {
+    margin-right: 4px;
+}
+
+.nav-shadow {
+    box-shadow: 1px 1px 5px #ccc;
+}
+
+.login {    
+    min-width: 20rem !important;
+}
+
+.dropdown-menu {
+    padding: 10px;
+}
+
+.dropdown-item, .dropdown-toggle {
+    cursor: pointer;
+}
+
+a:active,
+a:focus {
+  background-color: transparent;
+}
+
+.dropdown-item a:hover {
+  background-color: #eaeaea;
+}
+
+.dropdown-item {    
+    text-shadow: 1px 1px #ccc;
+}
+
+.register-link {    
+    text-shadow: 1px 1px #ccc;
+    text-align: center;
+}
+
+.nav-item img {
+    border-radius: 50%;
+    width: 40px;
+    border: 1px #ddd solid;
+}

@@ -1,0 +1,71 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark nav-shadow fixed-top">
+  <a class="navbar-brand" [routerLink]="['/home']">
+    <img src="./assets/fluxo_logo1_clear.png">
+  </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#appNavbar" aria-controls="appNavbar" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="appNavbar">
+    <ul class="nav navbar-nav mr-auto">
+      <li class="nav-item" routerLinkActive="active" *ngIf="isLoggedIn()">
+        <a class="nav-link" [routerLink]="['/dashboard']"><i class="fa fa-code-fork"></i>Dashboard</a>
+      </li>
+      <li class="nav-item" routerLinkActive="active" *ngIf="isLoggedIn()">
+        <a class="nav-link" [routerLink]="['/messages']"><i class="fa fa-envelope"></i>Mensagens</a>
+      </li>
+      <li class="nav-item" routerLinkActive="active" *ngIf="isLoggedIn() && isAdmin()">
+        <a class="nav-link" [routerLink]="['/settings']"><i class="fa fa-cog"></i>Configurações</a>
+      </li>
+      <li class="nav-item" routerLinkActive="active" *ngIf="isLoggedIn()">
+        <a class="nav-link" [routerLink]="['/support']"><i class="fa fa-question-circle"></i>Suporte</a>
+      </li>
+    </ul>
+    
+    <ul class="nav navbar-nav navbar-right">
+      <li class="nav-item dropdown">
+        <a (click)="false" class="nav-link dropdown-toggle " data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Alterar idioma ({{model.userPreferredLanguage | uppercase}})<span class="caret"></span></a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" (click)="toggleLanguage('pt-br')">Português (PT-BR)</a>
+          <a class="dropdown-item" (click)="toggleLanguage('en-us')">English (EN-US)</a>
+        </div>
+      </li>
+    </ul>
+    
+    <ul class="nav navbar-nav navbar-right" *ngIf="!isLoggedIn()">
+      <li class="nav-item dropdown">
+        <button class="btn btn-success dropdown-toggle" type="button" id="signInMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Entrar</button>
+        <div class="dropdown-menu dropdown-menu-right login" aria-labelledby="signInMenuButton">
+
+          <form class="navbar-form" (ngSubmit)="login()" [formGroup]="loginForm">
+            <div class="form-group">
+              <input type="email" placeholder="Email" class="form-control" formControlName="userName">
+            </div>
+            <div class="form-group">
+              <input type="password" placeholder="Senha" class="form-control" formControlName="password">
+            </div>
+            <div class="clearfix">
+              <button type="submit" class="btn btn-success float-right" [disabled]="!loginForm.valid">Entrar</button></div>
+            <div class="dropdown-divider"></div>
+            <a [routerLink]="['/register']" class="register-link">Não é um membro? Registre-se aqui</a>
+          </form>
+
+        </div>
+      </li>
+    </ul>
+
+    <ul class="nav navbar-nav navbar-right" *ngIf="isLoggedIn()" >
+      <li class="nav-item dropdown">
+        <a (click)="false" class="nav-link dropdown-toggle " data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Bem vindo, {{model.displayName}}</a>
+        <div class="dropdown-menu dropdown-menu-right">
+          <a class="dropdown-item" [routerLink]="['/member/edit']"><i class="fa fa-user"></i>Editar Perfil</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item " (click)="logout()"><i class="fa fa-sign-out"></i>Sair</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <img src="{{model.photoUrl}}" alt="">
+      </li>
+    </ul>
+  </div>
+</nav>
