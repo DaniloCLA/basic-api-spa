@@ -1,4 +1,67 @@
-.container-fluid {
-    padding-left: 0px;
-    padding-right: 0px;
+.carousel-item {
+    /*Cheat Sheet: background: bg-color bg-image position/bg-size bg-repeat bg-origin bg-clip bg-attachment initial|inherit;*/
+    background: no-repeat center center scroll;
+    min-height: 300px;
+    height: 85vh;
+    /*trying to reach as many renderers as possible*/
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+.slide1 {
+    background-image: url('http://placehold.it/1900x1080');
+}
+
+.slide2 {
+    background-image: url('http://placehold.it/1900x1080');
+}
+
+.slide3 {
+    background-image: url('http://placehold.it/1900x1080');
+}
+
+.first-section {
+    background-color: #2D7D9A !important;
+    border-radius: 0px !important;
+    color: white;
+    margin-bottom: 0px !important;
+}
+
+.arrow-48 {
+    font-size: 48px;
+}
+
+.second-section {
+    height: 65vh;
+}
+
+.parallax {
+    background-image: url('../../assets/parallax.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    /*trying to reach as many renderers as possible*/
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+.third-section {
+    background-color: #69797E !important;
+    color: white;
+}
+
+.third-section h3 {
+    margin-top: 15px;
+}
+
+.fourth-section {
+    height: 55vh;
+    background-color: #eee !important;
+}
+
+footer {
+    background-color: #4A5459 !important;
 }

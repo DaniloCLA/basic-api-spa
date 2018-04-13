@@ -8,6 +8,7 @@
 
 # dependencies
 /node_modules
+/bower_components
 
 # IDEs and editors
 /.idea
@@ -33,7 +34,6 @@
 npm-debug.log
 yarn-error.log
 testem.log
-/typings
 
 # e2e
 /e2e/*.js

@@ -1,5 +1,5 @@
 .bg-dark {
-    background-color: #4A5459 !important;
+    background-color: #515C6B !important;
     text-shadow: 1px 1px #000;
 }
 .navbar-brand img {
@@ -16,7 +16,7 @@
 }
 
 .nav-shadow {
-    box-shadow: 1px 1px 5px #ccc;
+    border-bottom: #4C4A48 2px solid;
 }
 
 .login {    

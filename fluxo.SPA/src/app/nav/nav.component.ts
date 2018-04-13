@@ -35,8 +35,6 @@ export class NavComponent implements OnInit {
   login() {
     this.loggedIn = true;
 
-    this.model = Object.assign({}, this.loginForm.value);
-
     this.router.navigate(['/dashboard']);
     alertify.success('Bem vindo, ' + this.model.displayName);
     this.loginForm.reset();
