@@ -3,7 +3,7 @@
 using fluxo.DATA.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace fluxo.DATA
+namespace fluxo.DATA.Context
 {
     public class DataContext : DbContext
     {        

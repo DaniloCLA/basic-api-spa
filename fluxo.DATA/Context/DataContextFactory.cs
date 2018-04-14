@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 
-namespace fluxo.DATA
+namespace fluxo.DATA.Context
 {
     public class DataContextFactory : IDesignTimeDbContextFactory<DataContext>
     {
