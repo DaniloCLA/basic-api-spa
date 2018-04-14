@@ -11,6 +11,7 @@ export class HomeComponent {
 
   constructor() { }
 
+  // tslint:disable-next-line:use-life-cycle-interface
   ngAfterViewInit() {
     this.setupParallax();
   }
