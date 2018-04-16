@@ -20,6 +20,11 @@ namespace fluxo.DATA.Context
                 .HasKey(k => new {k.UserId, k.TeamId});
 
             builder.Entity<User>()
+                .HasOne(u => u.Organization)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<User>()
                 .HasOne(u => u.OrganizationOwned)
                 .WithOne(o => o.Owner)
                 .HasForeignKey<Organization>(o => o.OwnerId)

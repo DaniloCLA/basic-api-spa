@@ -9,6 +9,8 @@ using Microsoft.IdentityModel.Tokens;
 
 using fluxo.DATA.Repository;
 using AutoMapper;
+using fluxo.API.DTO;
+using fluxo.DATA.Models;
 
 namespace fluxo.API.Controllers
 {
@@ -34,6 +36,25 @@ namespace fluxo.API.Controllers
             bool result = await _repo.UserExists(email);
 
             return Ok(result);
+        }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody]UserToRegisterDTO userDTO)
+        {
+            if (!string.IsNullOrEmpty(userDTO.Email))
+                userDTO.Email = userDTO.Email.ToLower();
+
+            if (await _repo.UserExists(userDTO.Email))
+                ModelState.AddModelError("Email", "Email já existente no sistema");
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var userToCreate = _mapper.Map<User>(userDTO);
+            var createdUser = await _repo.Register(userToCreate, userDTO.Password);
+            var userToReturn = _mapper.Map<UserToListDTO>(createdUser);
+
+            return CreatedAtRoute("GetUser", new {controller = "Users", id = createdUser.Id}, userToReturn);
         }
 
         /*[HttpPost("register")]

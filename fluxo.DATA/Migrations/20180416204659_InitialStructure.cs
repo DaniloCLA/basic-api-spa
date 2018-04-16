@@ -9,6 +9,21 @@ namespace fluxo.DATA.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Teams",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    IsCustom = table.Column<bool>(nullable: false),
+                    Name = table.Column<string>(nullable: true),
+                    OrganizationId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Teams", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -19,6 +34,7 @@ namespace fluxo.DATA.Migrations
                     Email = table.Column<string>(nullable: true),
                     FullName = table.Column<string>(nullable: true),
                     LastActive = table.Column<DateTime>(nullable: false),
+                    OrganizationId = table.Column<int>(nullable: false),
                     PasswordHash = table.Column<byte[]>(nullable: true),
                     PasswordSalt = table.Column<byte[]>(nullable: true)
                 },
@@ -79,27 +95,6 @@ namespace fluxo.DATA.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Teams",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    IsCustom = table.Column<bool>(nullable: false),
-                    Name = table.Column<string>(nullable: true),
-                    OrganizationId = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Teams", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Teams_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "TeamAssignments",
                 columns: table => new
                 {
@@ -149,10 +144,35 @@ namespace fluxo.DATA.Migrations
                 name: "IX_Teams_OrganizationId",
                 table: "Teams",
                 column: "OrganizationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_OrganizationId",
+                table: "Users",
+                column: "OrganizationId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Teams_Organizations_OrganizationId",
+                table: "Teams",
+                column: "OrganizationId",
+                principalTable: "Organizations",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Users_Organizations_OrganizationId",
+                table: "Users",
+                column: "OrganizationId",
+                principalTable: "Organizations",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Organizations_Users_OwnerId",
+                table: "Organizations");
+
             migrationBuilder.DropTable(
                 name: "Messages");
 
@@ -163,10 +183,10 @@ namespace fluxo.DATA.Migrations
                 name: "Teams");
 
             migrationBuilder.DropTable(
-                name: "Organizations");
+                name: "Users");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "Organizations");
         }
     }
 }

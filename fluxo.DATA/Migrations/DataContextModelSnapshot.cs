@@ -112,11 +112,15 @@ namespace fluxo.DATA.Migrations
 
                     b.Property<DateTime>("LastActive");
 
+                    b.Property<int>("OrganizationId");
+
                     b.Property<byte[]>("PasswordHash");
 
                     b.Property<byte[]>("PasswordSalt");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OrganizationId");
 
                     b.ToTable("Users");
                 });
@@ -161,6 +165,14 @@ namespace fluxo.DATA.Migrations
                         .WithMany("TeamsAssigned")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("fluxo.DATA.Models.User", b =>
+                {
+                    b.HasOne("fluxo.DATA.Models.Organization", "Organization")
+                        .WithMany()
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 #pragma warning restore 612, 618
         }

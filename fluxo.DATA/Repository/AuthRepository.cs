@@ -1,13 +1,14 @@
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+
 using fluxo.DATA.Context;
 using fluxo.DATA.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace fluxo.DATA.Repository
 {
     public class AuthRepository : IAuthRepository
     {
-        private readonly DataContext _context;
+        protected readonly DataContext _context;
         public AuthRepository(DataContext context)
         {
             _context = context;

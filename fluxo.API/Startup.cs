@@ -12,6 +12,9 @@ using Microsoft.Extensions.Options;
 
 using fluxo.DATA;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace fluxo.API
 {
@@ -24,7 +27,7 @@ namespace fluxo.API
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        //TODO: Environment connString and keys
         public void ConfigureServices(IServiceCollection services)
         {
             //Data
@@ -34,20 +37,41 @@ namespace fluxo.API
             services.AddAutoMapper();
 
             //Core
-            services.AddMvc();
-            services.AddCors();
+            var apiKey = Encoding.ASCII.GetBytes(Configuration.GetSection("AppSettings:ApiKey").Value);
+
+            services.AddCors();  
+            services.AddMvc().AddJsonOptions(opt => {
+                opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+            });
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme) .AddJwtBearer(options => {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    ValidateLifetime = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(apiKey),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
+            if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().AllowCredentials());
-            app.UseMvc();
+            app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().AllowCredentials());            
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+            app.UseAuthentication();
+            app.UseMvc(routes => {
+                routes.MapSpaFallbackRoute(
+                    name: "spa-fallback",
+                    defaults: new { controller = "Fallback", action = "Index"}
+                );
+            });
         }
     }
 }

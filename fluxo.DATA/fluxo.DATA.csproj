@@ -13,7 +13,4 @@
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.2"/>
   </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-    <None Update="fluxo.db" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
 </Project>

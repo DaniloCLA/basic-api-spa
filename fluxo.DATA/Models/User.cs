@@ -13,6 +13,8 @@ namespace fluxo.DATA.Models
         public string DisplayName { get; set; }
         public DateTime Created { get; set; }
         public DateTime LastActive { get; set; }
+        public int OrganizationId { get; set; }
+        public Organization Organization { get; set; }
         public Organization OrganizationOwned { get; set; }
         public ICollection<TeamAssignment> TeamsAssigned { get; set; }
         public ICollection<Message> MessagesSent { get; set; }
