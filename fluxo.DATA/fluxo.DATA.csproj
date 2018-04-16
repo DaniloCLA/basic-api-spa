@@ -8,8 +8,12 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.0.2"/>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="2.0.2"/>
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.1"/>
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.0.1"/>
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.2"/>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <None Update="fluxo.db" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

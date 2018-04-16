@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 using fluxo.DATA;
+using AutoMapper;
 
 namespace fluxo.API
 {
@@ -26,6 +27,13 @@ namespace fluxo.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //Data
+            services.AddFluxoDataUsingSqlite(Configuration.GetConnectionString("SqliteConnection"));
+
+            //Helpers
+            services.AddAutoMapper();
+
+            //Core
             services.AddMvc();
             services.AddCors();
         }
