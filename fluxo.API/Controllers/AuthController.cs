@@ -12,6 +12,7 @@ using AutoMapper;
 using fluxo.DATA.Repository;
 using fluxo.API.DTO;
 using fluxo.DATA.Models;
+using fluxo.API.Helpers;
 
 namespace fluxo.API.Controllers
 {
@@ -72,18 +73,13 @@ namespace fluxo.API.Controllers
         {
             var userFromRepo = await _repo.Login(loginDTO.Email.ToLower(), loginDTO.Password);
 
-            if (userFromRepo == null || !this.IsUserValid(userFromRepo))
+            if (userFromRepo == null || !userFromRepo.IsValid())
                 return Unauthorized();
 
             var token = this.GenerateToken(userFromRepo);
             var user = _mapper.Map<UserToListDTO>(userFromRepo);
 
             return Ok(new { token, user });
-        }
-
-        private bool IsUserValid(User user) {
-            //TODO: Add payment verification
-            return DateTime.Now < user.Created.AddDays(7);
         }
 
         private string GenerateToken(User user) 
