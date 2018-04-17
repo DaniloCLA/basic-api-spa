@@ -12,15 +12,12 @@ namespace fluxo.API.Helpers
         {
             CreateMap<UserToRegisterDTO, User>();
             CreateMap<User, UserToListDTO>()
-                .ForMember(dto => dto.IsOwner, opt => {
-                    opt.MapFrom(model => model.OrganizationOwned != null);
-                })
-                .ForMember(dto => dto.IsAdmin, opt => {
-                    opt.MapFrom(model => model.TeamsAssigned.Any(t => !t.Team.IsCustom));
-                })
-                .ForMember(dto => dto.IsValid, opt => {
-                    opt.MapFrom(model => DateTime.Now < model.Created.AddDays(7));
-                });
+                .ForMember(dto => dto.IsOwner, opt => { opt.MapFrom(model => model.IsOwner()); })
+                .ForMember(dto => dto.IsAdmin, opt => { opt.MapFrom(model => model.IsAdmin()); })
+                .ForMember(dto => dto.IsValid, opt => { opt.MapFrom(model => model.IsValid()); });
+            CreateMap<UserToEditDTO, User>();
+            CreateMap<User, UserToEditDTO>()
+                .ForMember(dto => dto.TeamIds, opt => { opt.MapFrom(model => model.TeamsAssigned.Select(ta => ta.TeamId).ToArray()); });
         }
     }
 }

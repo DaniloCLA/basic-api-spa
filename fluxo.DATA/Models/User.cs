@@ -11,10 +11,14 @@ namespace fluxo.DATA.Models
         public byte[] PasswordSalt { get; set; }
         public string FullName { get; set; }
         public string DisplayName { get; set; }
+        public string PhotoUrl { get; set; }
         public DateTime Created { get; set; }
         public DateTime? LastActive { get; set; }
         public int? OrganizationId { get; set; }
         public Organization Organization { get; set; }
+        public bool IsDeleted { get; set; }
+
+        //Navigation
         public Organization OrganizationOwned { get; set; }
         public ICollection<TeamAssignment> TeamsAssigned { get; set; }
         public ICollection<Message> MessagesSent { get; set; }

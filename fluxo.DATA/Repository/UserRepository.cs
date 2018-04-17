@@ -13,12 +13,12 @@ namespace fluxo.DATA.Repository
     {
         public UserRepository(DataContext context) : base(context) {}
 
-        public async Task<User> GetUser(int id)
+        public async Task<User> GetUser(int id, bool ignoreDeleted=true)
         {
             return await _context.Users
                 .Include(u => u.OrganizationOwned)
-                .Include(u => u.TeamsAssigned)
-                .FirstOrDefaultAsync(u => u.Id == id);
+                .Include(u => u.TeamsAssigned).ThenInclude(ta => ta.Team)
+                .FirstOrDefaultAsync(u => u.Id == id && (!u.IsDeleted || !ignoreDeleted));
         }
 
         public async Task<PagedList<User>> GetUsers(UserListParams userParams)
@@ -28,11 +28,46 @@ namespace fluxo.DATA.Repository
             var users = _context.Users
                 .Include(p => p.OrganizationOwned)
                 .Include(p => p.Organization)
-                .Include(p => p.TeamsAssigned)
+                .Include(p => p.TeamsAssigned).ThenInclude(ta => ta.Team)
                 .OrderByDescending(u => u.FullName).AsQueryable();
 
-            users = users.Where(u => u.Id != userParams.UserId);
-            users = users.Where(u => u.OrganizationId == userRequesting.OrganizationId);
+            users = users.Where(u => u.OrganizationId == userRequesting.OrganizationId && !u.IsDeleted);
+
+            if (!string.IsNullOrEmpty(userParams.OrderBy))
+            {
+                switch (userParams.OrderBy)
+                {
+                    case "created":
+                        users = users.OrderByDescending(u => u.Created);
+                        break;
+                    case "lastActive":
+                        users = users.OrderByDescending(u => u.LastActive);
+                        break;
+                    default:
+                        users = users.OrderByDescending(u => u.FullName);
+                        break;
+                }
+            }
+
+            return await PagedList<User>.CreateAsync(users, userParams.PageNumber, userParams.PageSize);
+        }
+
+        public async Task<Team> GetTeam(int id)
+        {
+            return await _context.Teams.FirstOrDefaultAsync(t => t.Id == id);
+        }
+
+        public async Task<PagedList<User>> GetDeletedUsers(UserListParams userParams)
+        {
+            var userRequesting = await _context.Users.FirstOrDefaultAsync(u => u.Id == userParams.UserId);
+
+            var users = _context.Users
+                .Include(p => p.OrganizationOwned)
+                .Include(p => p.Organization)
+                .Include(p => p.TeamsAssigned).ThenInclude(ta => ta.Team)
+                .OrderByDescending(u => u.FullName).AsQueryable();
+
+            users = users.Where(u => u.OrganizationId == userRequesting.OrganizationId && u.IsDeleted);
 
             if (!string.IsNullOrEmpty(userParams.OrderBy))
             {

@@ -8,7 +8,7 @@ using System;
 
 namespace fluxo.API.Helpers
 {
-    public class LogUserActivity
+    public class LogUserActivity : IAsyncActionFilter
     {        
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {

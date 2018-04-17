@@ -1,6 +1,6 @@
 namespace fluxo.DATA.Params
 {
-    public class BaseParams
+    public class PageableParams
     {        
         private const int MaxPageSize = 50;
         public int PageNumber { get; set; } = 1;

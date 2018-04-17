@@ -23,6 +23,7 @@ namespace fluxo.DATA
 
         private static void AddRepositories(this IServiceCollection services) {
             services.AddScoped<IAuthRepository, AuthRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
         }
     }
 }

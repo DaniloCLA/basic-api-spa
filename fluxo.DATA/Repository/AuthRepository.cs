@@ -47,15 +47,20 @@ namespace fluxo.DATA.Repository
            return true;
         }
 
+        public async Task<User> AddMember(User user, string password, Organization organization)
+        {
+            this.InitiateUser(user, password);
+            user.Organization = organization;
+
+            await _context.Users.AddAsync(user);
+            await _context.SaveChangesAsync();
+
+            return user;
+        }
+
         public async Task<User> Register(User user, string password, string organizationName)
         {
-            user.Created = DateTime.Now;
-
-            byte[] passwordHash, passwordSalt;
-            CreatePasswordHash(password, out passwordHash, out passwordSalt);
-
-            user.PasswordHash = passwordHash;
-            user.PasswordSalt = passwordSalt;
+            this.InitiateUser(user, password);
 
             using (var transaction = _context.Database.BeginTransaction())
             {
@@ -68,6 +73,16 @@ namespace fluxo.DATA.Repository
             }
 
             return user;
+        }
+
+        private void InitiateUser(User user, string password) {
+            user.Created = DateTime.Now;
+
+            byte[] passwordHash, passwordSalt;
+            CreatePasswordHash(password, out passwordHash, out passwordSalt);
+
+            user.PasswordHash = passwordHash;
+            user.PasswordSalt = passwordSalt;
         }
 
         private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)

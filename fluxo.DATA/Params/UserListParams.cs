@@ -1,6 +1,6 @@
 namespace fluxo.DATA.Params
 {
-    public class UserListParams : BaseParams
+    public class UserListParams : PageableParams
     {
         public int UserId { get; set; }
         public string NameContains { get; set; }

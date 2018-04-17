@@ -63,9 +63,7 @@ namespace fluxo.API.Controllers
 
             var userToReturn = _mapper.Map<UserToListDTO>(createdUser);
 
-            return Ok();
-
-            //return CreatedAtRoute("GetUser", new {controller = "Users", id = createdUser.Id}, userToReturn);
+            return CreatedAtRoute("GetUser", new {controller = "Users", id = createdUser.Id}, userToReturn);
         }
 
         [HttpPost("login")]

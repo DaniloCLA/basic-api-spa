@@ -15,6 +15,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using fluxo.API.Helpers;
 
 namespace fluxo.API
 {
@@ -35,6 +36,9 @@ namespace fluxo.API
 
             //Helpers
             services.AddAutoMapper();
+
+            //Filters
+            services.AddScoped<LogUserActivity>();
 
             //Core
             var apiKey = Encoding.ASCII.GetBytes(Configuration.GetSection("AppSettings:ApiKey").Value);
