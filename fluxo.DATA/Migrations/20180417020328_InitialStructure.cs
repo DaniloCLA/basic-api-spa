@@ -33,8 +33,8 @@ namespace fluxo.DATA.Migrations
                     DisplayName = table.Column<string>(nullable: true),
                     Email = table.Column<string>(nullable: true),
                     FullName = table.Column<string>(nullable: true),
-                    LastActive = table.Column<DateTime>(nullable: false),
-                    OrganizationId = table.Column<int>(nullable: false),
+                    LastActive = table.Column<DateTime>(nullable: true),
+                    OrganizationId = table.Column<int>(nullable: true),
                     PasswordHash = table.Column<byte[]>(nullable: true),
                     PasswordSalt = table.Column<byte[]>(nullable: true)
                 },

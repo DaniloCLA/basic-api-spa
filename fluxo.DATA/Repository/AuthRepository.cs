@@ -3,6 +3,10 @@ using Microsoft.EntityFrameworkCore;
 
 using fluxo.DATA.Context;
 using fluxo.DATA.Models;
+using System.Collections.Generic;
+using System;
+using Microsoft.EntityFrameworkCore.Storage;
+using System.Linq;
 
 namespace fluxo.DATA.Repository
 {
@@ -18,7 +22,7 @@ namespace fluxo.DATA.Repository
         {
             var user = await _context.Users
                 .Include(p => p.OrganizationOwned)
-                .Include(p => p.TeamsAssigned)
+                .Include(p => p.TeamsAssigned).ThenInclude(ta => ta.Team)
                 .FirstOrDefaultAsync(x => x.Email == email);
 
             if (user == null)
@@ -43,16 +47,25 @@ namespace fluxo.DATA.Repository
            return true;
         }
 
-        public async Task<User> Register(User user, string password)
+        public async Task<User> Register(User user, string password, string organizationName)
         {
+            user.Created = DateTime.Now;
+
             byte[] passwordHash, passwordSalt;
             CreatePasswordHash(password, out passwordHash, out passwordSalt);
 
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
 
-            await _context.Users.AddAsync(user);
-            await _context.SaveChangesAsync();
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                await _context.Users.AddAsync(user);
+                await _context.SaveChangesAsync();
+                
+                await CreateOrganization(user, organizationName);
+
+                transaction.Commit();
+            }
 
             return user;
         }
@@ -72,6 +85,19 @@ namespace fluxo.DATA.Repository
                 return true;
             
             return false;
+        }
+
+        public async Task CreateOrganization(User user, string organizationName) 
+        {
+            var organization = new Organization(){ Name = organizationName, Owner = user };
+            var adminTeam = new Team { Name = "Admin", IsCustom = false };
+            adminTeam.UsersAssigned = new List<TeamAssignment> { new TeamAssignment(){ User = user, Team = adminTeam, IsLead = true } };
+            organization.Teams = new List<Team> { adminTeam };
+
+            user.Organization = organization;
+            
+            await _context.Organizations.AddAsync(organization);
+            await _context.SaveChangesAsync();
         }
     }
 }

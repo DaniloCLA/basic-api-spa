@@ -110,9 +110,9 @@ namespace fluxo.DATA.Migrations
 
                     b.Property<string>("FullName");
 
-                    b.Property<DateTime>("LastActive");
+                    b.Property<DateTime?>("LastActive");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int?>("OrganizationId");
 
                     b.Property<byte[]>("PasswordHash");
 

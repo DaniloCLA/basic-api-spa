@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using System.Collections.Generic;
+using AutoMapper;
 
 using fluxo.DATA.Repository;
-using AutoMapper;
 using fluxo.API.DTO;
 using fluxo.DATA.Models;
 
@@ -33,80 +34,77 @@ namespace fluxo.API.Controllers
             if (string.IsNullOrEmpty(email))
                 return BadRequest();
 
-            bool result = await _repo.UserExists(email);
+            bool exists = await _repo.UserExists(email);
 
-            return Ok(result);
+            if (!exists) return BadRequest();
+
+            return Ok();
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody]UserToRegisterDTO userDTO)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             if (!string.IsNullOrEmpty(userDTO.Email))
                 userDTO.Email = userDTO.Email.ToLower();
 
             if (await _repo.UserExists(userDTO.Email))
                 ModelState.AddModelError("Email", "Email já existente no sistema");
 
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             var userToCreate = _mapper.Map<User>(userDTO);
-            var createdUser = await _repo.Register(userToCreate, userDTO.Password);
+
+            var createdUser = await _repo.Register(userToCreate, userDTO.Password, userDTO.OrganizationName);
+
+            if (createdUser.Id == 0)
+                return BadRequest();
+
             var userToReturn = _mapper.Map<UserToListDTO>(createdUser);
 
-            return CreatedAtRoute("GetUser", new {controller = "Users", id = createdUser.Id}, userToReturn);
-        }
+            return Ok();
 
-        /*[HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody]UserForRegisterDto userForRegisterDto)
-        {
-            if (!string.IsNullOrEmpty(userForRegisterDto.Username))
-                userForRegisterDto.Username = userForRegisterDto.Username.ToLower();
-
-            if (await _repo.UserExists(userForRegisterDto.Username))
-                ModelState.AddModelError("Username", "Username already exists");
-
-            // validate request
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var userToCreate = _mapper.Map<User>(userForRegisterDto);
-
-            var createdUser = await _repo.Register(userToCreate, userForRegisterDto.Password);
-
-            var userToReturn = _mapper.Map<UserForDetailedDto>(createdUser);
-
-            return CreatedAtRoute("GetUser", new {controller = "Users", id = createdUser.Id}, userToReturn);
+            //return CreatedAtRoute("GetUser", new {controller = "Users", id = createdUser.Id}, userToReturn);
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody]UserForLoginDto userForLoginDto)
+        public async Task<IActionResult> Login([FromBody]UserToLoginDTO loginDTO)
         {
-            var userFromRepo = await _repo.Login(userForLoginDto.Username.ToLower(), userForLoginDto.Password);
+            var userFromRepo = await _repo.Login(loginDTO.Email.ToLower(), loginDTO.Password);
 
-            if (userFromRepo == null)
+            if (userFromRepo == null || !this.IsUserValid(userFromRepo))
                 return Unauthorized();
 
-            // generate token
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_config.GetSection("AppSettings:Token").Value);
+            var token = this.GenerateToken(userFromRepo);
+            var user = _mapper.Map<UserToListDTO>(userFromRepo);
+
+            return Ok(new { token, user });
+        }
+
+        private bool IsUserValid(User user) {
+            //TODO: Add payment verification
+            return DateTime.Now < user.Created.AddDays(7);
+        }
+
+        private string GenerateToken(User user) 
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();            
+            //TODO: Use Environment
+            var key = Encoding.ASCII.GetBytes(_config.GetSection("AppSettings:ApiKey").Value);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.NameIdentifier, userFromRepo.Id.ToString()),
-                    new Claim(ClaimTypes.Name, userFromRepo.Username)
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.Name, user.DisplayName)
                 }),
                 Expires = DateTime.Now.AddDays(1),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
                     SecurityAlgorithms.HmacSha512Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
-            var tokenString = tokenHandler.WriteToken(token);
 
-            var user = _mapper.Map<UserForListDto>(userFromRepo);
-
-            return Ok(new { tokenString, user });
-        }*/
+            return tokenHandler.WriteToken(token);
+        }
     }
 }

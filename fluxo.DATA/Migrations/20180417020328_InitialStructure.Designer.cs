@@ -11,7 +11,7 @@ using System;
 namespace fluxo.DATA.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20180416204659_InitialStructure")]
+    [Migration("20180417020328_InitialStructure")]
     partial class InitialStructure
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -111,9 +111,9 @@ namespace fluxo.DATA.Migrations
 
                     b.Property<string>("FullName");
 
-                    b.Property<DateTime>("LastActive");
+                    b.Property<DateTime?>("LastActive");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<int?>("OrganizationId");
 
                     b.Property<byte[]>("PasswordHash");
 
